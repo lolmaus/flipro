@@ -10,7 +10,8 @@ Group=flipro
 WorkingDirectory=/opt/flipro
 EnvironmentFile=/etc/flipro.env
 Environment=NODE_ENV=production
-ExecStart=/usr/bin/env node /opt/flipro/dist/server.js
+# Ansible must render the absolute path to its root-owned versioned runtime.
+ExecStart=/opt/node/versions/26.10.0/bin/node /opt/flipro/dist/server.js
 Restart=on-failure
 RestartSec=3
 TimeoutStopSec=15

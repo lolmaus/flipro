@@ -15,19 +15,30 @@ concurrency:
 
 jobs:
   check:
-    name: Lint, format, types, tests, build
+    name: Checks and production smoke (${{ matrix.runtime }})
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [node@24, preferred]
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Set up pinned Node and pnpm, restore cache, install dependencies
+      - name: Set up Node and pinned pnpm, restore cache, install dependencies
         uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
         with:
           node-version-file: .nvmrc
+          runtime: ${{ matrix.runtime == 'preferred' && 'node' || matrix.runtime }}
           cache: true
           require-lockfile: true
       - name: Check project
         run: pnpm run check
+      - name: Prune development dependencies
+        run: pnpm prune --prod
+      - name: Verify compiled production application
+        env:
+          EXPECTED_REVISION: ${{ github.sha }}
+        run: pnpm run smoke:production

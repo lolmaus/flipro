@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { DOMParser } from '@xmldom/xmldom';
 import type { Document, Element } from '@xmldom/xmldom';
 import { parsePublicOrigin } from '../src/config.ts';
+import { checkVersion } from './check-version.ts';
 
 const origin = parsePublicOrigin(process.env.PUBLIC_ORIGIN);
 const atom = 'http://www.w3.org/2005/Atom';
@@ -41,6 +42,10 @@ function links(doc: Document): Element[] {
 const health = await request('/_flipro/health');
 assert.equal(health.status, 200);
 assert.deepEqual(await health.json(), { status: 'ok' });
+console.log(
+  'OK: build identity',
+  await checkVersion(origin, process.env.EXPECTED_REVISION, process.env.EXPECTED_NODE_VERSION),
+);
 const root = await document('/opds');
 assert.equal(root.documentElement?.localName, 'feed');
 console.log('OK: health and root catalog');

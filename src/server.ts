@@ -1,6 +1,7 @@
 import { serve } from '@hono/node-server';
 import { createApp } from './app.ts';
 import { readConfig } from './config.ts';
+import { versionInfo } from './version.ts';
 
 const config = readConfig();
 const app = createApp({
@@ -8,6 +9,7 @@ const app = createApp({
   log: (event) => console.log(JSON.stringify(event)),
 });
 const server = serve({ fetch: app.fetch, hostname: config.host, port: config.port }, () => {
+  console.log(JSON.stringify({ event: 'startup', ...versionInfo() }));
   console.log(
     `Flipro listening on http://${config.host}:${config.port}; catalog: ${config.publicOrigin}/opds`,
   );
