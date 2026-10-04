@@ -1,0 +1,4 @@
+# Replace this hostname and point its DNS at the VPS.
+books.example.com {
+    reverse_proxy 127.0.0.1:3000
+}

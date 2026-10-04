@@ -1,0 +1,23 @@
+[Unit]
+Description=Flipro Flibusta OPDS proxy
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=flipro
+Group=flipro
+WorkingDirectory=/opt/flipro
+EnvironmentFile=/etc/flipro.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/env node /opt/flipro/dist/server.js
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "env": {
+    "node": true
+  },
+  "options": {
+    "maxWarnings": 0
+  },
+  "rules": {
+    "eslint/no-var": "error",
+    "eslint/prefer-const": "error"
+  },
+  "ignorePatterns": ["dist/**", "node_modules/**"]
+}
