@@ -9,6 +9,14 @@ export async function checkVersion(
     redirect: 'manual',
     signal: AbortSignal.timeout(5000),
   });
+  return validateVersion(response, expectedRevision, expectedNode);
+}
+
+export async function validateVersion(
+  response: Response,
+  expectedRevision?: string,
+  expectedNode?: string,
+) {
   assert.equal(response.status, 200);
   assert.match(response.headers.get('content-type') ?? '', /^application\/json/);
   assert.equal(response.headers.get('cache-control'), 'no-store');
