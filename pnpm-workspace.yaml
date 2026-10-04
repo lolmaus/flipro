@@ -1,0 +1,12 @@
+# Allow immediate releases from the trusted projects used by this app.
+minimumReleaseAgeExclude:
+  - hono
+  - '@hono/*'
+  - '@xmldom/*'
+  - '@types/node'
+  - typescript
+  - '@typescript/*'
+  - oxlint
+  - '@oxlint/*'
+  - oxfmt
+  - '@oxfmt/*'
