@@ -34,7 +34,7 @@ Open **http://localhost:3000/opds** on the development computer. To reach it fro
 
 The development server watches source files and restarts after changes. It does not start automatically after a VPS reboot; use the production service for that. Request logs are written to standard output.
 
-With the server running, `pnpm run smoke` checks health, build identity, the live catalog, OpenSearch, Cyrillic search, pagination, cover headers, redirected download headers, and the upstream authentication challenge. It uses `PUBLIC_ORIGIN` from your environment or `.env`, requires upstream network access, and does not download books or use account credentials.
+With the server running, `pnpm run smoke` checks health, build identity, the live catalog, OpenSearch, Cyrillic search, pagination, cover headers, a bounded download prefix, and the upstream authentication challenge. It uses `PUBLIC_ORIGIN` from your environment or `.env`, requires upstream network access, and uses anonymous partial GET probes. [Live smoke verification](docs/live-smoke.md) documents sample overrides, equivalent upstream comparisons, retry/runtime/byte bounds, diagnostic JSON and exit codes (0 passed, 1 failed, 2 incomplete). A partial probe does not verify an entire book.
 
 ## KOReader
 
@@ -116,7 +116,7 @@ EXPECTED_REVISION=0123456789abcdef0123456789abcdef01234567 \
 EXPECTED_NODE_VERSION=v26.10.0 pnpm run smoke
 ```
 
-These expectation variables belong to smoke tooling, not application configuration. Live smoke checks also exercise anonymous catalog navigation and authentication challenges; fixture tests verify credential forwarding without a real account.
+These expectation variables belong to smoke tooling, not application configuration. Live smoke checks also exercise anonymous catalog navigation and authentication challenges; fixture tests verify credential forwarding without a real account. Deployment tooling must distinguish upstream-dependent incomplete verification (exit 2) from complete success (exit 0) and demonstrated failures (exit 1), and retain the [smoke report](docs/live-smoke.md#outcomes-and-deployment-tooling).
 
 ## Behavior and limits
 
