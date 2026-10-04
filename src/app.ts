@@ -3,6 +3,7 @@ import { proxy } from 'hono/proxy';
 import { parsePublicOrigin } from './config.ts';
 import { isCatalogPath, MAIN_ORIGIN, rewriteUrl, STATIC_PREFIX, upstreamUrl } from './urls.ts';
 import { rewriteCatalog } from './xml.ts';
+import { versionInfo } from './version.ts';
 
 export interface RequestLog {
   method: string;
@@ -151,6 +152,10 @@ export function createApp(options: AppOptions): Hono {
       return c.text('Method not allowed\n', 405, { Allow: 'GET, HEAD' });
     }
     if (incoming.pathname === '/_flipro/health') return c.json({ status: 'ok' });
+    if (incoming.pathname === '/_flipro/version') {
+      c.header('Cache-Control', 'no-store');
+      return c.json(versionInfo());
+    }
     if (incoming.pathname === '/') return c.redirect(`${publicOrigin}/opds`, 307);
     if (
       incoming.pathname.startsWith('/_flipro') &&

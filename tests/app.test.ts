@@ -6,6 +6,7 @@ import { gzipSync } from 'node:zlib';
 import { serve } from '@hono/node-server';
 import { createApp } from '../src/app.ts';
 import type { AppOptions, RequestLog } from '../src/app.ts';
+import { buildIdentity } from '../src/build-identity.ts';
 
 const origin = 'https://books.example.com';
 const feed =
@@ -160,6 +161,24 @@ test('root, health, and method rejection work without touching upstream', async 
   }
   assert.equal((await server.request('/_flipro/unknown')).status, 404);
   assert.equal(received.length, initial);
+});
+
+test('version reports local identity and the actual runtime without upstream access', async () => {
+  const server = app({
+    fetch: async () => {
+      throw new Error('Version and health must not contact upstream');
+    },
+  });
+  const response = await server.request('/_flipro/version');
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') ?? '', /^application\/json/);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.deepEqual(await response.json(), { ...buildIdentity, node: process.version });
+  const head = await server.request('/_flipro/version', { method: 'HEAD' });
+  assert.equal(head.status, 200);
+  assert.equal(await head.text(), '');
+  assert.equal((await server.request('/_flipro/version', { method: 'POST' })).status, 405);
+  assert.deepEqual(await (await server.request('/_flipro/health')).json(), { status: 'ok' });
 });
 
 test('catalog rewriting strips ranges and conditional validators and uses configured origin', async () => {
