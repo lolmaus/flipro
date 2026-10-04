@@ -130,6 +130,8 @@ Integration tests bind ephemeral loopback ports and require permission to open l
 
 ## CI
 
+Trusted dependency projects are exempt from pnpm’s release-age delay through `minimumReleaseAgeExclude` in `pnpm-workspace.yaml`, including their native platform packages. This allows their latest stable releases to install immediately in both development and CI. Update dependencies with pnpm and commit the manifest and lockfile together.
+
 GitHub Actions runs `pnpm run check` in one job for pull requests and pushes to `main`/`master`, with a manual trigger available. Live smoke checks remain manual because they depend on Flibusta availability.
 
 The workflow reads Node from `.nvmrc` and pnpm from `devEngines.packageManager`; it does not duplicate either version. [pnpm/setup](https://github.com/pnpm/setup) restores the pnpm store before installing Node and dependencies, caches lockfile-verification results, and enforces a frozen lockfile. It performs the dependency installation once; there is no extra setup-node, Corepack, or install step. The store cache reuses downloads rather than caching `node_modules`.
